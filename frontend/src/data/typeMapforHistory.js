@@ -6,7 +6,7 @@ export const exerciseTypeMap = {
     textColor: 'text-red-700',
     borderColor: 'border-red-500',
     lightBg: 'bg-red-100',
-    icon: '💪',  // bicep flex icon
+    icon: '🏋️',  // weight lifter icon
     label: 'PUSH'
   },
   pull: {
@@ -14,7 +14,7 @@ export const exerciseTypeMap = {
     textColor: 'text-blue-700',
     borderColor: 'border-blue-500',
     lightBg: 'bg-blue-100',
-    icon: '🏋️',  // weight lifter icon
+    icon: '💪',  // bicep flex icon
     label: 'PULL'
   },
   legs: {

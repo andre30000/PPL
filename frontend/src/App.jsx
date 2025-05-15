@@ -61,6 +61,7 @@ export default function WorkoutTracker() {
     try {
       const response = await fetch(`${API_URL}/workouts`);
       clearTimeout(timeout); // Clear timeout if request finishes
+      setDelayWarning(false); // Make sure delay warning is cleared when data loads
 
       if (!response.ok) throw new Error('Failed to fetch workout history');
 
@@ -74,6 +75,7 @@ export default function WorkoutTracker() {
       setFilteredHistory(data);
     } catch (err) {
       clearTimeout(timeout);
+      setDelayWarning(false); // Also clear delay warning if there's an error
       console.error('API fetch error:', err);
       setError('Failed to contact the API. Using local data if available.');
 
@@ -183,7 +185,7 @@ export default function WorkoutTracker() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
       <header className="bg-blue-600 text-white p-4 shadow-md">
-        <h1 className="text-2xl font-bold text-center">Workout Tracker</h1>
+        <h1 className="text-2xl font-bold text-center">PPL Tracker</h1>
         {error && (
           <div className="mt-2 bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded text-sm">
             {error}
@@ -197,14 +199,9 @@ export default function WorkoutTracker() {
         </div>
       )}
 
-      {delayWarning && (
-        <div className="fixed top-20 right-4 bg-yellow-400 text-black px-4 py-2 rounded shadow-md z-50 animate-fade-in-out">
-          The server is taking a while to respond… it may be waking up.
-        </div>
-      )}
-
       <main className="flex-grow p-4">
-        {isLoading && <Loader />}
+        {isLoading && <Loader delayWarning={delayWarning} />}
+
 
         {activeTab !== 'home' && (
           <div className="mb-4">
@@ -328,7 +325,8 @@ export default function WorkoutTracker() {
           </div>
         )}
 
-        {activeTab === 'history' && showHistory && (
+        {/* old list view */}
+        {/* {activeTab === 'history' && showHistory && (
           <WorkoutHistory 
             history={filteredHistory}
             onBack={() => {
@@ -337,6 +335,17 @@ export default function WorkoutTracker() {
             }}
             onFilterChange={handleFilterChange}
             filter={exerciseFilter}
+            formatDate={formatDate}
+          />
+        )} */}
+
+        {activeTab === 'history' && showHistory && (
+          <WorkoutHistory 
+            history={filteredHistory}
+            onBack={() => {
+              setActiveTab('home');
+              setShowHistory(false);
+            }}
             formatDate={formatDate}
           />
         )}
