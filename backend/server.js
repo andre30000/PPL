@@ -24,8 +24,8 @@ app.use(cors({
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost:27017/workout-tracker")
-.then(() => console.log('Connected to MongoDB'))
-.catch(err => console.error('MongoDB connection error:', err));
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.error('MongoDB connection error:', err));
 
 // Define Workout schema and model
 const workoutSchema = new mongoose.Schema({
@@ -39,10 +39,11 @@ const workoutSchema = new mongoose.Schema({
 const Workout = mongoose.model('Workout', workoutSchema);
 
 // API Routes
-const router = express.Router();
+// Create routes directly on app instead of using a router
+// This avoids potential issues with path-to-regexp
 
 // Get all workouts
-router.get('/workouts', async (req, res) => {
+app.get('/api/workouts', async (req, res) => {
   try {
     const workouts = await Workout.find().sort({ date: -1 });
     res.json(workouts);
@@ -53,7 +54,7 @@ router.get('/workouts', async (req, res) => {
 });
 
 // Add new workout
-router.post('/workouts', async (req, res) => {
+app.post('/api/workouts', async (req, res) => {
   try {
     const { date, workout, exercise, weight, reps } = req.body;
     
@@ -74,7 +75,7 @@ router.post('/workouts', async (req, res) => {
 });
 
 // Delete workout
-router.delete('/workouts/:id', async (req, res) => {
+app.delete('/api/workouts/:id', async (req, res) => {
   try {
     const workout = await Workout.findByIdAndDelete(req.params.id);
     if (!workout) {
@@ -86,9 +87,6 @@ router.delete('/workouts/:id', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
-
-// Use API routes
-app.use('/api', router);
 
 // Serve static assets in production
 if (process.env.NODE_ENV === 'production') {
