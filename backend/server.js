@@ -88,14 +88,14 @@ app.delete('/api/workouts/:id', async (req, res) => {
   }
 });
 
-// Serve static assets in production
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static('client/build'));
+// Serve static assets in production - only needed in the backend is serving the front end - REMOVED
+// if (process.env.NODE_ENV === 'production') {
+//   app.use(express.static('client/build'));
 
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
-  });
-}
+//   app.get('*', (req, res) => {
+//     res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+//   });
+// }
 
 // Set port
 const PORT = process.env.PORT || 5000;
