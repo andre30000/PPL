@@ -4,6 +4,7 @@ import './index.css'; // Or the path to your CSS file
 import { AnimatePresence, motion } from 'framer-motion';
 import { exerciseTypeMap, getWorkoutTypeFromName } from './data/typeMapforHistory.js';
 import WorkoutHistory from './components/WorkoutHistory.jsx';
+import Loader from './components/Loader.jsx';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -20,6 +21,8 @@ export default function WorkoutTracker() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [notification, setNotification] = useState('');
+  const [delayWarning, setDelayWarning] = useState(false);
+
 
   const getTodayDateString = () => {
     return new Date().toISOString().split('T')[0]; // e.g., "2025-05-14"
@@ -49,9 +52,16 @@ export default function WorkoutTracker() {
   const fetchWorkoutHistory = async () => {
     setIsLoading(true);
     setError(null);
+    setDelayWarning(false);
+
+      const timeout = setTimeout(() => {
+        setDelayWarning(true);
+      }, 5000); // 5 seconds
 
     try {
       const response = await fetch(`${API_URL}/workouts`);
+      clearTimeout(timeout); // Clear timeout if request finishes
+
       if (!response.ok) throw new Error('Failed to fetch workout history');
 
       const data = await response.json();
@@ -63,6 +73,7 @@ export default function WorkoutTracker() {
       setWorkoutHistory(data);
       setFilteredHistory(data);
     } catch (err) {
+      clearTimeout(timeout);
       console.error('API fetch error:', err);
       setError('Failed to contact the API. Using local data if available.');
 
@@ -186,14 +197,14 @@ export default function WorkoutTracker() {
         </div>
       )}
 
+      {delayWarning && (
+        <div className="fixed top-20 right-4 bg-yellow-400 text-black px-4 py-2 rounded shadow-md z-50 animate-fade-in-out">
+          The server is taking a while to respond… it may be waking up.
+        </div>
+      )}
+
       <main className="flex-grow p-4">
-        {isLoading && (
-          <div className="fixed inset-0 bg-black bg-opacity-20 flex items-center justify-center z-50">
-            <div className="bg-white p-4 rounded-lg shadow-lg">
-              <p className="text-gray-800">Loading...</p>
-            </div>
-          </div>
-        )}
+        {isLoading && <Loader />}
 
         {activeTab !== 'home' && (
           <div className="mb-4">
